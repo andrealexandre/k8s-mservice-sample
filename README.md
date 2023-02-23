@@ -1,8 +1,9 @@
 # K8s Service Sample
 
 ## Tool setup
-* Install `brew install minikube`
 * Install `brew install kubectl`
+* Install `brew install minikube`
+* Install `brew install sbt`
 
 ## Local K8s setup
 * Install `minikube start`
@@ -38,6 +39,8 @@ After starting the sample with `sbt run` the following requests can be made:
 
 ## Deploy in minikube
 
+* Before using any kubectl, we need to tell minikube to load the local image we just built
+  * `minikube image load k8s-mservice:0.1.0-SNAPSHOT`
 * Let's create a deployment
   * `kubectl apply -f k8s/k8s-mservice-deployment.yaml`
   * `kubectl get deployments`
@@ -46,8 +49,19 @@ After starting the sample with `sbt run` the following requests can be made:
   * `kubectl port-forward deployments/k8s-mservice-deployment 8080:8080`
 * Let's create a service
   * `kubectl apply -f k8s/k8s-mservice-service.yaml`
+  * Expose service k8s service `minikube service k8s-mservice`
+  * Tail logs in pod `kubectl logs -f pods/<pod_id>`
+* Now try to change the deployment YAML and add an extra replica. Try to curl the service again.
+* Creating an ingress
+  * `minikube addons enable ingress` - addons for minikube
+  * `kubectl apply -f k8s/k8s-mservice-ingress.yaml`
+  * `kubectl get ingress` - Will list the IP and hostname for the ingress
+  * Update `/etc/hosts` to allow your laptop to find the DNS `k8s-mservice.com` to the IP found previously
 
 ## Refs
 
+* https://minikube.sigs.k8s.io/docs/start/
 * https://github.com/akka/akka-http-quickstart-scala.g8
 * https://www.scala-sbt.org/sbt-native-packager/formats/docker.html
+* https://kubernetes.io/docs/concepts/workloads
+* https://kubernetes.io/docs/concepts/services-networking
